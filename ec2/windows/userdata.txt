@@ -1,0 +1,3 @@
+<powershell>
+Rename-Computer -NewName c33gstest1 -force -restart
+</powershell>
