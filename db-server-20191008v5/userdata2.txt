@@ -1,0 +1,56 @@
+<powershell> 
+    
+  Function InstallAWSToolsforWindowsPowerShell() {
+
+    $AWSPowerShellModuleSourceURL = "http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi"
+    $DestinationFolder = "D:\AWS\"
+
+    Write-Host "Downloading AWS PowerShell Module from $AWSPowerShellModuleSourceURL"
+
+    try
+    {
+        Invoke-WebRequest -Uri $AWSPowerShellModuleSourceURL -OutFile "$DestinationFolder\AWSToolsAndSDKForNet.msi" -ErrorAction STOP
+
+        $msifile = "$DestinationFolder\AWSToolsAndSDKForNet.msi"
+
+        $arguments = @(
+                        "/i"
+                        "`"$msiFile`""
+                        "/qb"
+                        "/norestart"
+                        )
+
+        Write-Host "Attempting to install $msifile"
+
+        $process = Start-Process -FilePath msiexec.exe -ArgumentList $arguments -Wait -PassThru
+        if ($process.ExitCode -eq 0)
+        {
+            Write-Host "$msiFile has been successfully installed"
+           Rename-Computer -NewName s33tpdb1 -Force                   
+            New-Item D:\SQL -Type directory -Force
+            Start-BitsTransfer -Source "http://download.microsoft.com/download/F/E/9/FE9397FA-BFAB-4ADD-8B97-91234BC774B2/SQLServer2016-x64-ENU.iso" -Destination D:\SQL -ErrorAction Stop
+            Start-BitsTransfer -Source "http://download.microsoft.com/download/4/7/2/47218E85-5903-4EF4-B54E-3B71DD558017/SSMS-Setup-ENU.exe" -Destination D:\SQL -ErrorAction Stop
+        }
+        if (D:\AWS\SQL\SSMS-Setup-ENU.exe)
+            Write-Host "Restarting Computer"
+            Restart-Computer -Force
+        }
+        else
+        {
+            Write-Host "installer exit code  $($process.ExitCode) for file  $($msifile)"
+        }
+
+        ###
+    }
+    catch
+    {
+        Write-Host $_.Exception.Message
+    }
+}
+
+
+
+
+InstallAWSToolsforWindowsPowerShell 
+
+</powershell>
